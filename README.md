@@ -232,3 +232,23 @@ python src/server.py
 ```bash
 pytest -q
 ```
+
+## 心流平台（iFlow）qwen3-235b 测试
+
+可使用仓库内脚本快速验证模型 API 连通性：
+
+```bash
+IFLOW_API_KEY=你的key python scripts/test_iflow_qwen.py
+```
+
+可选环境变量：
+
+- `IFLOW_API_URL`（默认：`https://api.iflow.cn/v1/chat/completions`）
+- `IFLOW_MODEL`（默认：`qwen3-235b`）
+
+示例（Windows PowerShell）：
+
+```powershell
+$env:IFLOW_API_KEY="你的key"
+python scripts/test_iflow_qwen.py
+```
