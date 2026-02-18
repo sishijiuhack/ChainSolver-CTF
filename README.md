@@ -235,20 +235,40 @@ pytest -q
 
 ## 心流平台（iFlow）qwen3-235b 测试
 
-可使用仓库内脚本快速验证模型 API 连通性：
+> 你反馈的 `INVALID_JSON_RESPONSE + HTML 页面` 是因为请求命中了站点页，而非模型 API 端点。
+
+仓库脚本已内置端点兜底与 HTML 识别诊断，优先尝试：
+
+- `https://platform.iflow.cn/v1/chat/completions`
+- `https://platform.iflow.cn/api/openai/v1/chat/completions`
+
+### Linux / macOS
 
 ```bash
 IFLOW_API_KEY=你的key python scripts/test_iflow_qwen.py
 ```
 
-可选环境变量：
-
-- `IFLOW_API_URL`（默认：`https://api.iflow.cn/v1/chat/completions`）
-- `IFLOW_MODEL`（默认：`qwen3-235b`）
-
-示例（Windows PowerShell）：
+### Windows PowerShell
 
 ```powershell
 $env:IFLOW_API_KEY="你的key"
 python scripts/test_iflow_qwen.py
 ```
+
+### 显式指定端点（推荐）
+
+```bash
+IFLOW_API_KEY=你的key IFLOW_API_URL=https://platform.iflow.cn/v1/chat/completions python scripts/test_iflow_qwen.py
+```
+
+可选环境变量：
+
+- `IFLOW_API_URL`：手动指定 API 端点
+- `IFLOW_MODEL`（默认：`qwen3-235b`）
+- `IFLOW_TIMEOUT_S`（默认：`30`）
+
+如果再次出现 HTML 响应，优先检查：
+
+1. 端点是否是 `platform.iflow.cn` 而不是 `api.iflow.cn`。
+2. API Key 是否有效、是否有该模型调用权限。
+3. 网络代理是否拦截了 HTTPS 出站请求。
