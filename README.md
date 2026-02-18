@@ -1,6 +1,6 @@
 # ChainSolver-CTF MCP Server
 
-将 ChainSolver-CTF 重构为 MCP 服务器的 MVP 版本，提供可由 Claude/Cursor 等客户端直接调用的 CTF 工具。
+将 ChainSolver-CTF 重构为 MCP 服务器的 MVP 版本，提供可由 Claude Desktop、VS Code（Cline / Continue / 其他支持 MCP 的扩展）、Cursor 等客户端直接调用的 CTF 工具。
 
 ## 已实现（Phase 1 MVP）
 
@@ -57,7 +57,7 @@ python -m venv .venv
 pip install -r requirements.txt
 ```
 
-## 运行
+## 运行（本地自测）
 
 ### 方式 1：直接运行（跨平台）
 
@@ -65,7 +65,7 @@ pip install -r requirements.txt
 python src/server.py
 ```
 
-### 方式 2：安装后使用 CLI（跨平台）
+### 方式 2：安装后使用 CLI（推荐，跨平台）
 
 ```bash
 pip install -e .
@@ -76,9 +76,15 @@ chainsolver-mcp
 
 > This tool is for CTF competitions and authorized security testing only. Do NOT use on systems you don't own or have explicit permission to test.
 
-## Claude Desktop MCP 配置示例
+---
 
-> 建议优先使用 `chainsolver-mcp` CLI，减少系统路径差异（尤其是 Windows）。
+## MCP 客户端配置总览
+
+推荐优先使用 `chainsolver-mcp` 命令作为 `command`，避免不同平台 Python 路径差异。
+
+若你不想安装 CLI，也可以用 `python + src/server.py` 方式。
+
+### 通用 JSON 模板（CLI 方式）
 
 ```json
 {
@@ -88,25 +94,138 @@ chainsolver-mcp
       "args": [],
       "env": {
         "ETH_RPC_URL": "https://mainnet.infura.io/v3/YOUR_KEY",
-        "MAX_GAS": "1000000"
+        "MAX_GAS": "1000000",
+        "BIND_HOST": "127.0.0.1"
       }
     }
   }
 }
 ```
 
-若未安装 CLI，也可使用：
+### 通用 JSON 模板（Python 方式）
 
 ```json
 {
   "mcpServers": {
     "chainsolver-ctf": {
       "command": "python",
-      "args": ["/absolute/path/to/src/server.py"]
+      "args": ["/absolute/path/to/src/server.py"],
+      "env": {
+        "ETH_RPC_URL": "https://mainnet.infura.io/v3/YOUR_KEY",
+        "MAX_GAS": "1000000",
+        "BIND_HOST": "127.0.0.1"
+      }
     }
   }
 }
 ```
+
+---
+
+## VS Code 兼容配置（重点）
+
+> 下面给出“可直接复制”的配置方式，适用于 VS Code 中支持 MCP 的扩展（如 Cline / Continue 的 MCP 配置能力）。
+
+### 1）先确认可执行命令
+
+在 VS Code 终端中执行：
+
+```bash
+chainsolver-mcp
+```
+
+如果提示命令不存在，改用：
+
+```bash
+python src/server.py
+```
+
+### 2）在扩展的 MCP 配置中新增服务
+
+不同扩展 UI 位置不同，但最终都需要填写以下字段：
+
+- `name`: `chainsolver-ctf`
+- `command`: 推荐 `chainsolver-mcp`
+- `args`: 推荐 `[]`
+- `env`:
+  - `ETH_RPC_URL`
+  - `MAX_GAS`
+  - `BIND_HOST`（建议 `127.0.0.1`）
+
+#### VS Code（Windows）建议配置（CLI）
+
+```json
+{
+  "mcpServers": {
+    "chainsolver-ctf": {
+      "command": "chainsolver-mcp",
+      "args": [],
+      "env": {
+        "ETH_RPC_URL": "https://mainnet.infura.io/v3/YOUR_KEY",
+        "MAX_GAS": "1000000",
+        "BIND_HOST": "127.0.0.1"
+      }
+    }
+  }
+}
+```
+
+#### VS Code（Windows）回退配置（python 直启）
+
+```json
+{
+  "mcpServers": {
+    "chainsolver-ctf": {
+      "command": "python",
+      "args": ["C:/absolute/path/to/ChainSolver-CTF/src/server.py"],
+      "env": {
+        "ETH_RPC_URL": "https://mainnet.infura.io/v3/YOUR_KEY",
+        "MAX_GAS": "1000000",
+        "BIND_HOST": "127.0.0.1"
+      }
+    }
+  }
+}
+```
+
+### 3）VS Code 常见问题排查
+
+1. **扩展里启动失败但终端能运行**
+   - 原因：扩展进程拿不到你终端激活的 venv。
+   - 处理：在配置中直接使用 `python` 绝对路径（venv 里的 python），或先 `pip install -e .` 后使用 `chainsolver-mcp`。
+
+2. **Windows 下路径分隔符问题**
+   - 在 JSON 里推荐使用 `/`（如 `C:/.../src/server.py`），可减少转义问题。
+
+3. **命令找不到（`chainsolver-mcp` not found）**
+   - 确认已执行 `pip install -e .`。
+   - 确认当前 VS Code 使用的是安装该包的 Python 解释器。
+
+4. **RPC 或环境变量未生效**
+   - 检查 `env` 是否写在对应 server 节点内。
+   - 变量名必须与代码一致：`ETH_RPC_URL`、`MAX_GAS`、`BIND_HOST`。
+
+---
+
+## Claude Desktop 配置示例
+
+```json
+{
+  "mcpServers": {
+    "chainsolver-ctf": {
+      "command": "chainsolver-mcp",
+      "args": [],
+      "env": {
+        "ETH_RPC_URL": "https://mainnet.infura.io/v3/YOUR_KEY",
+        "MAX_GAS": "1000000",
+        "BIND_HOST": "127.0.0.1"
+      }
+    }
+  }
+}
+```
+
+---
 
 ## 测试
 
