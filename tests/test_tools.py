@@ -1,6 +1,6 @@
-from tools.blockchain import decode_transaction
-from tools.ctf_toolbox import decode_string, hash_identify, jwt_decode
-from tools.flag_extraction import extract_flags
+from chainsolver_mcp.tools.blockchain import decode_transaction
+from chainsolver_mcp.tools.ctf_toolbox import decode_string, hash_identify, jwt_decode
+from chainsolver_mcp.tools.flag_extraction import extract_flags
 
 
 def test_decode_transaction_hex_values():
