@@ -1,0 +1,1 @@
+"""ChainSolver MCP package."""
