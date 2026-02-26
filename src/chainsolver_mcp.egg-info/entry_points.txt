@@ -1,0 +1,2 @@
+[console_scripts]
+chainsolver-mcp = chainsolver_mcp.server:main
