@@ -1,0 +1,6 @@
+Metadata-Version: 2.4
+Name: chainsolver-mcp
+Version: 0.2.0
+Requires-Dist: mcp>=1.2.0
+Requires-Dist: web3>=7.0.0
+Dynamic: requires-dist

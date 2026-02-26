@@ -1,0 +1,14 @@
+{
+  "servers": {
+    "chainsolver-ctf": {
+      "type": "stdio",
+      "command": "E:/ctfcodes/ChainSolver-CTF/.venv/Scripts/chainsolver-mcp.exe",
+      "args": [],
+      "env": {
+        "ETH_RPC_URL": "",
+        "MAX_GAS": "1000000",
+        "BIND_HOST": "127.0.0.1"
+      }
+    }
+  }
+}
